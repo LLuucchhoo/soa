@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+        <center>
+            <h:form id="frmLineaProducto">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblLineaProducto" var="lineaProducto" value="#{lineaProductoControl.lstLineaProducto}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblProducto"
+                             filteredValue="#{lineaProductoControl.lstLineaProductoFiltrada}"
+                             emptyMessage="No se encontró linea de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblLineaProducto').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgLineaProducto').show()" update="dlgLineaProducto">
+                                <f:setPropertyActionListener target="#{lineaProductoControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{lineaProducto.idLineaProducto}" filterBy="#{lineaProducto.idLineaProducto}" filterMatchMode="contains">
+                        <h:outputText value="#{lineaProducto.idLineaProducto}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{lineaProducto.nombreLineaProducto}" filterBy="#{lineaProducto.nombreLineaProducto}" filterMatchMode="contains">
+                        <h:outputText value="#{lineaProducto.nombreLineaProducto}"/>
+                    </p:column>
+                    <p:column headerText="OBSERVACIONES" sortBy="#{lineaProducto.observacionLineaProducto}" filterBy="#{lineaProducto.observacionLineaProducto}">
+                        <h:outputText value="#{lineaProducto.observacionLineaProducto}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgLineaProducto').show()"
+                                         update="dlgLineaProducto">
+                            <f:setPropertyActionListener target="#{lineaProductoControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{lineaProductoControl.lineaProducto}" value="#{lineaProducto}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{lineaProductoControl.lineaProducto}" value="#{lineaProducto}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{lineaProductoControl.borrarLineaProducto()}" update=":frmLineaProducto:tblLineaProducto"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgLineaProducto" widgetVar="wDlgLineaProducto"
+                      modal="true" header="Datos de linea de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Clase: "/>
+                        <p:selectOneMenu id="claseProducto" 
+                                         value="#{lineaProductoControl.lineaProducto.idClaseProducto}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{lineaProductoControl.lstClaseProducto}" 
+                                           var="claseProducto" itemLabel="#{claseProducto.nombreClaseProducto}"
+                                           itemValue="#{claseProducto}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Nombre"/>
+                        <p:inputText value="#{lineaProductoControl.lineaProducto.nombreLineaProducto}"/>
+                        <p:outputLabel value="Observaciones:"/>
+                        <p:inputText value="#{lineaProductoControl.lineaProducto.observacionLineaProducto}"/>
+                        <p:commandButton value="#{lineaProductoControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgLineaProducto').hide()" 
+                                         action="#{lineaProductoControl.doAccion()}"
+                                         update=":frmLineaProducto:tblLineaProducto"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+     </ui:define>
+</ui:composition>
+
+
+
+
+

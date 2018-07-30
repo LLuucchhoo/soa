@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+    
+        <center>
+            <h:form id="frmEstadoProducto">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblEstadoProducto" var="estadoProducto" value="#{estadoProductoControl.lstEstadoProducto}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblEstadoProducto"
+                             filteredValue="#{estadoProductoControl.lstEstadoProductoFiltrada}"
+                             emptyMessage="No se encontró estado de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblEstadoProducto').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgEstadoProducto').show()" update="dlgEstadoProducto">
+                                <f:setPropertyActionListener target="#{estadoProductoControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{estadoProducto.idEstadoProducto}" filterBy="#{estadoProducto.idEstadoProducto}" filterMatchMode="contains">
+                        <h:outputText value="#{estadoProducto.idEstadoProducto}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{estadoProducto.nombreEstadoProducto}" filterBy="#{estadoProducto.nombreEstadoProducto}" filterMatchMode="contains">
+                        <h:outputText value="#{estadoProducto.nombreEstadoProducto}"/>
+                    </p:column>
+                    <p:column headerText="OBSERVACIONES" sortBy="#{estadoProducto.observacionEstadoProducto}" filterBy="#{estadoProducto.observacionEstadoProducto}">
+                        <h:outputText value="#{estadoProducto.observacionEstadoProducto}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgEstadoProducto').show()"
+                                         update="dlgEstadoProducto">
+                            <f:setPropertyActionListener target="#{estadoProductoControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{estadoProductoControl.estadoProducto}" value="#{estadoProducto}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{estadoProductoControl.estadoProducto}" value="#{estadoProducto}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de estado producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{estadoProductoControl.borrarEstadoProducto()}" update=":frmEstadoProducto:tblEstadoProducto"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgEstadoProducto" widgetVar="wDlgEstadoProducto"
+                      modal="true" header="Datos de estado de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Nombre"/>
+                        <p:inputText value="#{estadoProductoControl.estadoProducto.nombreEstadoProducto}"/>   
+                        <p:outputLabel value="Observaciones:"/>
+                        <p:inputText value="#{estadoProductoControl.estadoProducto.observacionEstadoProducto}"/>
+                        <p:commandButton value="#{estadoProductoControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgEstadoProducto').hide()" 
+                                         action="#{estadoProductoControl.doAccion()}"
+                                         update=":frmEstadoProducto:tblEstadoProducto"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+        </ui:define>
+</ui:composition>
+    
+
+
+
+

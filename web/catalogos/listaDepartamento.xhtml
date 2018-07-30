@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+        <center>
+            <h:form id="frmDepartamento">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblDepartamento" var="departamento" value="#{departamentoControl.lstDepartamentoes}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblProducto"
+                             filteredValue="#{departamentoControl.lstDepartamentoFiltrada}"
+                             emptyMessage="No se encontró linea de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblDepartamento').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgDepartamento').show()" update="dlgDepartamento">
+                                <f:setPropertyActionListener target="#{departamentoControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{departamento.idDepartamento}" filterBy="#{departamento.idDepartamento}" filterMatchMode="contains">
+                        <h:outputText value="#{departamento.idDepartamento}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{departamento.nombreDepartamento}" filterBy="#{departamento.nombreDepartamento}" filterMatchMode="contains">
+                        <h:outputText value="#{departamento.nombreDepartamento}"/>
+                    </p:column>
+                    
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgDepartamento').show()"
+                                         update="dlgDepartamento">
+                            <f:setPropertyActionListener target="#{departamentoControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{departamentoControl.departamento}" value="#{departamento}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{departamentoControl.departamento}" value="#{departamento}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{departamentoControl.borrarDepartamento()}" update=":frmDepartamento:tblDepartamento"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgDepartamento" widgetVar="wDlgDepartamento"
+                      modal="true" header="Datos de linea de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Zona: "/>
+                        <p:selectOneMenu id="zona" 
+                                         value="#{departamentoControl.departamento.idZona}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{zonaControl.lstZona}" 
+                                           var="zona" itemLabel="#{zona.nombreZona}"
+                                           itemValue="#{zona}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Nombre"/>
+                        <p:inputText value="#{departamentoControl.departamento.nombreDepartamento}"/>
+                        <p:commandButton value="#{departamentoControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgDepartamento').hide()" 
+                                         action="#{departamentoControl.doAccion()}"
+                                         update=":frmDepartamento:tblDepartamento"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+     </ui:define>
+</ui:composition>

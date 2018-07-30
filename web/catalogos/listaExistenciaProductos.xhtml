@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+        <center>
+            <h:form id="frmExistenciaProducto">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblExistenciaProducto" var="existenciaProducto" value="#{existenciaProductoControl.lstExistenciaProducto}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblProducto"
+                             filteredValue="#{existenciaProductoControl.lstExistenciaProductoFiltrada}"
+                             emptyMessage="No se encontró linea de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblExistenciaProducto').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgExistenciaProducto').show()" update="dlgExistenciaProducto">
+                                <f:setPropertyActionListener target="#{existenciaProductoControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{existenciaProducto.idExistenciaProducto}" filterBy="#{existenciaProducto.idExistenciaProducto}" filterMatchMode="contains">
+                        <h:outputText value="#{existenciaProducto.idExistenciaProducto}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{existenciaProducto.idProducto.nombreProducto}" filterBy="#{existenciaProducto.idProducto.nombreProducto}" filterMatchMode="contains">
+                        <h:outputText value="#{existenciaProducto.idProducto.nombreProducto}"/>
+                    </p:column>
+                    <p:column headerText="Egreso" sortBy="#{existenciaProducto.egreso}" filterBy="#{existenciaProducto.egreso}">
+                        <h:outputText value="#{existenciaProducto.egreso}"/>
+                    </p:column>
+                    <p:column headerText="Ingreso" sortBy="#{existenciaProducto.ingreso}" filterBy="#{existenciaProducto.ingreso}">
+                        <h:outputText value="#{existenciaProducto.ingreso}"/>
+                    </p:column>
+                    <p:column headerText="Saldo" sortBy="#{existenciaProducto.saldo}" filterBy="#{existenciaProducto.saldo}">
+                        <h:outputText value="#{existenciaProducto.saldo}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgExistenciaProducto').show()"
+                                         update="dlgExistenciaProducto">
+                            <f:setPropertyActionListener target="#{existenciaProductoControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{existenciaProductoControl.existenciaProducto}" value="#{existenciaProducto}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{existenciaProductoControl.existenciaProducto}" value="#{existenciaProducto}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{existenciaProductoControl.borrarExistenciaProducto()}" update=":frmExistenciaProducto:tblExistenciaProducto"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgExistenciaProducto" widgetVar="wDlgExistenciaProducto"
+                      modal="true" header="Datos de linea de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Producto: "/>
+                        <p:selectOneMenu id="producto" 
+                                         value="#{existenciaProductoControl.existenciaProducto.idProducto}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{productoControl.lstProducto}" 
+                                           var="producto" itemLabel="#{producto.idProducto}"
+                                           itemValue="#{producto}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Egreso"/>
+                        <p:inputText value="#{existenciaProductoControl.existenciaProducto.egreso}"/>
+                        <p:outputLabel value="Ingreso:"/>
+                        <p:inputText value="#{existenciaProductoControl.existenciaProducto.ingreso}"/>
+                        <p:outputLabel value="Saldo:"/>
+                        <p:inputText value="#{existenciaProductoControl.existenciaProducto.saldo}"/>
+                        <p:commandButton value="#{existenciaProductoControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgExistenciaProducto').hide()" 
+                                         action="#{existenciaProductoControl.doAccion()}"
+                                         update=":frmExistenciaProducto:tblExistenciaProducto"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+     </ui:define>
+</ui:composition>

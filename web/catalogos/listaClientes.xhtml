@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      template="./../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Clientes</title>
+    </h:head>
+    <ui:define name="content">
+        <center>
+            <h:form id="frmClientes"> 
+                 <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblClientes" value="#{clienteControl.lstClientes}" var="cliente"
+                             rows="10"
+                             paginator="true"                         
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblClientes"
+                             filteredValue="#{clienteControl.lstClientesFilter}"                        
+                             emptyMessage="No se encontraron clientes" >
+                    <f:facet name="header">
+                        <h:outputLabel value="Busqueda"/>
+                        <p:inputText id="globalFilter" onkeyup="PF('wTblClientes').filter()" style="width:450px" placeholder="Ingrese la busqueda"/>
+                        <p:commandButton value="AGREGAR" icon="ui-icon-plus" oncomplete="PF('wDlgClientes').show()" update="dlgClientes">
+                            <f:setPropertyActionListener target="#{clienteControl.proceso}" value="AGREGAR"/>
+                        </p:commandButton> 
+                    </f:facet>
+                    <p:column headerText="ID">
+                        <h:outputText value="#{cliente.idCliente}" />
+                    </p:column>
+                    <p:column headerText="NOMBRE" filterBy="#{cliente.nombreCliente}" filterMatchMode="contains">
+                        <h:outputText value="#{cliente.nombreCliente}"/>
+                    </p:column>
+                    <p:column headerText="TIPO_CLIENTE" filterBy="#{cliente.idTipoCliente.nombreTipoCliente}" filterMatchMode="contains">
+                        <h:outputText value="#{cliente.idTipoCliente.nombreTipoCliente}"/>
+                    </p:column>
+                    <p:column headerText="TELEFONO">
+                        <h:outputText value="#{cliente.telefonoCliente}"/>
+                    </p:column>
+                    <p:column headerText="NIT">
+                        <h:outputText value="#{cliente.nitCliente}"/>
+                    </p:column>
+                    <p:column headerText="DIRECCION">
+                        <h:outputText value="#{cliente.direccionCliente}"/>
+                    </p:column>
+                    <p:column headerText="OBSERVACIONES">
+                        <h:outputText value="#{cliente.observacionCliente}"/>
+                    </p:column>
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wDlgClientes').show()" update="dlgClientes">
+                            <f:setPropertyActionListener target="#{clienteControl.proceso}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{clienteControl.cliente}" value="#{cliente}"/>
+                        </p:commandButton>                        
+                        <p:commandButton icon="ui-icon-trash"/>
+                    </p:column>
+                </p:dataTable>                       
+            </h:form>           
+            <p:dialog id="dlgClientes" widgetVar="wDlgClientes" modal="true" header="Datos de Cliente">              
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Nombre"/>
+                        <p:inputText id="nombre" value="#{clienteControl.cliente.nombreCliente}" required="true" requiredMessage="Ingrese nombre de cliente"/>
+                        <h:outputLabel value="Tipo Cliente"/>
+                        <p:selectOneMenu id="tipo" value="#{clienteControl.cliente.idTipoCliente}" converter="entityConverter" required="true" requiredMessage="Ingrese el tipo de cliente">
+                            <f:selectItem itemLabel="Seleccione tipo" itemValue="#{null}" />
+                            <f:selectItems var="tipo" value="#{clienteControl.lstTipoClientes}" itemLabel="#{tipo.nombreTipoCliente}" itemValue="#{tipo}"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel value="Municipio"/>
+                        <p:selectOneMenu id="municipio" value="#{clienteControl.cliente.idMunicipio}" converter="entityConverter" required="true" requiredMessage="Ingrese el municipio de cliente">
+                            <f:selectItem itemLabel="Seleccione municipio" itemValue="#{null}" />
+                            <f:selectItems var="municipio" value="#{clienteControl.lstMunicipios}" itemLabel="#{municipio.nombreMunicipio}" itemValue="#{municipio}" />
+                        </p:selectOneMenu>
+                        <h:outputLabel value="Direccion"/>
+                        <p:inputTextarea cols="30" rows="3" value="#{clienteControl.cliente.direccionCliente}"/>
+                        <h:outputLabel value="Telefono"/>
+                        <p:inputText id="telefono" value="#{clienteControl.cliente.telefonoCliente}" required="true" requiredMessage="Ingrese telefono de cliente"/>
+                        <h:outputLabel value="NIT"/>
+                        <p:inputText id="nit" value="#{clienteControl.cliente.nitCliente}" required="true" requiredMessage="Ingrese NIT"/>
+                        <h:outputLabel value="Observaciones"/>
+                        <p:inputTextarea cols="30" rows="3" value="#{clienteControl.cliente.observacionCliente}"/>
+                        <p:commandButton value="#{clienteControl.proceso}" icon="ui-icon-disk" action="#{clienteControl.doProcess()}" update=":frmClientes:tblClientes" oncomplete="PF('wDlgClientes').hide()"/>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+        </center>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+    <h:head>
+        <center>
+            <font size="18" color="blue" face="arial black">MENU</font>
+        </center>
+    </h:head>
+        <h:body >
+            <table border="3" align="center">
+            <tr>
+                <td><h1>INVENTARIO</h1></td>
+                <td><h1>VENTAS</h1></td>
+                <td><h1>COMPRAS</h1></td>
+                <td><h1>REPORTES</h1></td>
+            </tr>       
+         <tr>
+        <td >
+            <p:button  outcome="listaVentas" value="Administrar Ventas" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{ventas.idCliente.idCliente}" />
+        </p:button></td>
+        <td>
+        <p:button outcome="listaCompras" value="Administrar Compras" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{compras.idCompra}" />
+        </p:button></td>
+        <td>
+        <p:button outcome="listaClaseProducto" value="Administrar Clase de Productos" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{claseProducto.idClaseProducto}" />
+        </p:button></td>
+        
+        <td>        
+        <p:button outcome="listaClientes" value="Administrar Clientes" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{cliente.idCompra}" />
+        </p:button></td></tr>
+       <tr>  <td >
+        <p:button outcome="listaEstadoProducto" value="Administrar el Estado del Producto" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{estadoProducto.idEstadoProducto}" />
+        </p:button></td>
+                    <td>
+        <p:button outcome="listaExistenciaProductos" value="Administrar Existencia de Productos" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{existenciaProducto.idExistenciaProducto}" />
+        </p:button></td>
+        <td><p:button outcome="listaLineaProducto" value="Administrar Linea de Productos" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{lineaProducto.idLineaProducto}" />
+        </p:button></td>
+        <td>  
+        <p:button outcome="listaProductos" value="Administrar  Productos" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{producto.idProducto}" />
+        </p:button></td></tr>
+       <tr> <td><p:button outcome="listaProveedor" value="Administrar  Proveedores" icon="ui-icon-star" style="width: 230px; height: 40px">
+        <f:param name="a" value="#{proveedores.idProveedor}" />
+        </p:button></td>
+         <td><p:button outcome="listaTipoCliente" value="Administrar  Tipo de Cliente" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{tipoCliente.idTipoCliente}" />
+             </p:button></td>
+                 <td><p:button outcome="listaTipoDocumento" value="Administrar  Tipo de Documento" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{tpoDocumento.idTipoDocumento}" />
+         </p:button></td>
+        <td> <p:button outcome="listaTipoTransaccion" value="Administrar  Tipo de Transaccion" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{tpoTransaccion.idTipoTransaccion}" />
+        </p:button></td></tr>
+                <tr><td> <p:button outcome="listaVendedores" value="Administrar  Vendedores" icon="ui-icon-star" style="width: 230px; height: 40px">
+            <f:param name="a" value="#{vendedor.idVendedor}" />
+            </p:button></td></tr></table>
+       </h:body>
+    </ui:define>
+</ui:composition>

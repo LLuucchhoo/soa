@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+    
+        <center>
+            <h:form id="frmKardex">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblKardex" var="kardex" value="#{kardexControl.lstKardex}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblKardex"
+                             filteredValue="#{kardexControl.lstKardexFiltrada}"
+                             emptyMessage="No se encontró linea de kardexs">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblKardex').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgKardex').show()" update="dlgKardex">
+                                <f:setPropertyActionListener target="#{kardexControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="ID KARDEX" sortBy="#{kardex.idKardex}" filterBy="#{kardex.idKardex}" filterMatchMode="contains">
+                        <h:outputText value="#{kardex.idKardex}"/>
+                    </p:column>
+                    <p:column headerText="ID TIPO DOCUMENTO" sortBy="#{kardex.idTipoDocumento.nombreDocumento}" filterBy="#{kardex.idTipoDocumento.nombreDocumento}" filterMatchMode="contains">
+                        <h:outputText value="#{kardex.idTipoDocumento.nombreDocumento}"/>
+                    </p:column>
+                    <p:column headerText="ID TIPO TRANSACCION" sortBy="#{kardex.idTipoTransaccion.tipoTransaccion}" filterBy="#{kardex.idTipoTransaccion.tipoTransaccion}">
+                        <h:outputText value="#{kardex.idTipoTransaccion.tipoTransaccion}"/>
+                    </p:column>
+                    <p:column headerText="TIPO OPERACION" sortBy="#{kardex.tipoOperacion}" filterBy="#{kardex.tipoOperacion}">
+                        <h:outputText value="#{kardex.tipoOperacion}"/>
+                    </p:column>
+                    <p:column headerText="ID PRODUCTO" sortBy="#{kardex.idProducto.nombreProducto}" filterBy="#{kardex.idProducto.nombreProducto}">
+                        <h:outputText value="#{kardex.idProducto.nombreProducto}"/>
+                    </p:column>
+                    <p:column headerText="FECHA" sortBy="#{kardex.fecha}" filterBy="#{kardex.fecha}">
+                        <h:outputText value="#{kardex.fecha}"/>
+                    </p:column>
+                    <p:column headerText="CANTIDAD" sortBy="#{kardex.cantidad}" filterBy="#{kardex.cantidad}">
+                        <h:outputText value="#{kardex.cantidad}"/>
+                    </p:column>
+                    <p:column headerText="PRECIO" sortBy="#{kardex.precio}" filterBy="#{kardex.precio}">
+                        <h:outputText value="#{kardex.precio}"/>
+                    </p:column>
+                    <p:column headerText="COSTO PROMEDIO" sortBy="#{kardex.costoPromedio}" filterBy="#{kardex.costoPromedio}">
+                        <h:outputText value="#{kardex.costoPromedio}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgKardex').show()"
+                                         update="dlgKardex">
+                            <f:setPropertyActionListener target="#{kardexControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{kardexControl.kardex}" value="#{kardex}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{kardexControl.kardex}" value="#{kardex}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea kardex">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{kardexControl.borrarKardex()}" update=":frmKardex:tblKardex"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgKardex" widgetVar="wDlgKardex"
+                      modal="true" header="Datos  de kardex">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Id Tipo Transaccion: "/>
+                        <p:selectOneMenu id="tipoTrans" 
+                                         value="#{kardexControl.kardex.idTipoTransaccion}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{tipoTransaccionControl.lstTipoTransaccion}" 
+                                           var="tipoTrans" itemLabel=" #{tipoTrans.tipoTransaccion}"
+                                           itemValue="#{kardexControl.kardex.idTipoTransaccion}"/>
+                        </p:selectOneMenu>
+                     <p:outputLabel value="Id Tipo Documento: "/>
+                        <p:selectOneMenu id="tipoDocu" 
+                                         value="#{kardexControl.kardex.idTipoDocumento}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{tipoDocumentoControl.lstTipoDocumento}" 
+                                           var="tipoDocu" itemLabel="#{tipoDocu.nombreDocumento}"
+                                           itemValue="#{kardexControl.kardex.idTipoDocumento}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Id Producto: "/>
+                        <p:selectOneMenu id="produc" 
+                                         value="#{kardexControl.kardex.idProducto}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{productoControl.lstProducto}" 
+                                           var="produc" itemLabel="#{produc.nombreProducto}"
+                                           itemValue="#{kardexControl.kardex.idProducto}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Tipo de Operacion"/>
+                        <p:inputText value="#{kardexControl.kardex.tipoOperacion}"/> 
+                        <p:outputLabel value="Fecha:"/>
+                        <p:inputText value="#{kardexControl.kardex.fecha}"/>
+                        <p:outputLabel value="Cantidad"/>
+                        <p:inputText value="#{kardexControl.kardex.cantidad}"/>
+                        <p:outputLabel value="Precio:"/>
+                        <p:inputNumber value="#{kardexControl.kardex.precio}"
+                             symbol="$" decimalPlaces="2" 
+                                        decimalSeparator="."
+                                        thousandSeparator=","/>
+                        <p:outputLabel value="Costo Promedio:"/>
+                        <p:inputNumber value="#{kardexControl.kardex.costoPromedio}"
+                             symbol="$" decimalPlaces="2" 
+                                        decimalSeparator="."
+                                        thousandSeparator=","/>
+                        <p:commandButton value="#{kardexControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgKardex').hide()" 
+                                         action="#{kardexControl.doAccion()}"
+                                         update=":frmKardex:tblKardex"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+    </ui:define>
+</ui:composition>

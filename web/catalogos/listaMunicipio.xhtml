@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+        <center>
+            <h:form id="frmMunicipio">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblMunicipio" var="municipio" value="#{municipioControl.lstMunicipioes}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblProducto"
+                             filteredValue="#{municipioControl.lstMunicipioFiltrada}"
+                             emptyMessage="No se encontró linea de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblMunicipio').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgMunicipio').show()" update="dlgMunicipio">
+                                <f:setPropertyActionListener target="#{municipioControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{municipio.idMunicipio}" filterBy="#{municipio.idMunicipio}" filterMatchMode="contains">
+                        <h:outputText value="#{municipio.idMunicipio}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{municipio.nombreMunicipio}" filterBy="#{municipio.nombreMunicipio}" filterMatchMode="contains">
+                        <h:outputText value="#{municipio.nombreMunicipio}"/>
+                    </p:column>
+                    
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgMunicipio').show()"
+                                         update="dlgMunicipio">
+                            <f:setPropertyActionListener target="#{municipioControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{municipioControl.municipio}" value="#{municipio}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{municipioControl.municipio}" value="#{municipio}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{municipioControl.borrarMunicipio()}" update=":frmMunicipio:tblMunicipio"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgMunicipio" widgetVar="wDlgMunicipio"
+                      modal="true" header="Datos de linea de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Departamento: "/>
+                        <p:selectOneMenu id="departamento" 
+                                         value="#{municipioControl.municipio.idDepartamento}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{departamentoControl.lstDepartamentoes}" 
+                                           var="departamento" itemLabel="#{departamento.nombreDepartamento}"
+                                           itemValue="#{departamento}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Nombre"/>
+                        <p:inputText value="#{municipioControl.municipio.nombreMunicipio}"/>
+                        <p:commandButton value="#{municipioControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgMunicipio').hide()" 
+                                         action="#{municipioControl.doAccion()}"
+                                         update=":frmMunicipio:tblMunicipio"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+     </ui:define>
+</ui:composition>

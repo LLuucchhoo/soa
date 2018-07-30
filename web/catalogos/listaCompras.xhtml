@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+        <center>
+            <h:form id="frmCompra">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblCompra" var="compra" value="#{compraControl.lstCompras}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblProducto"
+                             filteredValue="#{compraControl.lstCompraFiltrada}"
+                             emptyMessage="No se encontró linea de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblCompra').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgCompra').show()" update="dlgCompra">
+                                <f:setPropertyActionListener target="#{compraControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{compra.idCompra}" filterBy="#{compra.idCompra}" filterMatchMode="contains">
+                        <h:outputText value="#{compra.idCompra}"/>
+                    </p:column>
+                                     
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgCompra').show()"
+                                         update="dlgCompra">
+                            <f:setPropertyActionListener target="#{compraControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{compraControl.compra}" value="#{compra}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{compraControl.compra}" value="#{compra}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{compraControl.borrarCompra()}" update=":frmCompra:tblCompra"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgCompra" widgetVar="wDlgCompra"
+                      modal="true" header="Datos de linea de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="ID Kardex: "/>
+                        <p:selectOneMenu id="kardex" 
+                                         value="#{compraControl.compra.idKardex}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{kardexControl.lstKardex}" 
+                                           var="kardex" itemLabel="#{kardex.idKardex}"
+                                           itemValue="#{kardex}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="ID Proveedor: "/>
+                        <p:selectOneMenu id="proveedor" 
+                                         value="#{compraControl.compra.idProveedor}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{proveedorControl.lstProveedores}" 
+                                           var="proveedor" itemLabel="#{proveedor.nombreProveedor}"
+                                           itemValue="#{proveedor}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="#{compraControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgCompra').hide()" 
+                                         action="#{compraControl.doAccion()}"
+                                         update=":frmCompra:tblCompra"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+     </ui:define>
+</ui:composition>

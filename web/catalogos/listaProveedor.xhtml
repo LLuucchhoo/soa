@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      template="./../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>proveedores</title>
+    </h:head>
+    <ui:define name="content">
+        <center>
+            <h:form id="frmProveedor">
+                <p:growl autoUpdate="true"/>                
+                <p:dataTable id="tblProveedor" var="proveedores" value="#{proveedorControl.lstProveedores}" rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15"
+                         paginatorPosition="bottom"
+                         widgetVar="wTblProveedor"
+                         filteredValue="#{proveedorControl.lstProveedoresFiltrada}"
+                         emptyMessage="No se encontraron tipos de transacción." style="width:95%;">
+                    <f:facet name="header">
+                        <p:commandButton value="Agregar" icon="ui-icon-plus" actionListener="#{proveedorControl.limpiar()}" oncomplete="PF('wDlgProveedor').show()" update="dlgProveedor">
+                            <f:setPropertyActionListener target="#{proveedorControl.accion}" value="AGREGAR"/>                             
+                        </p:commandButton>
+                    </f:facet>
+                    <p:column headerText="ID" sortBy="#{proveedores.idProveedor}" filterBy="#{proveedores.idProveedor}" filterMatchMode="contains">
+                        <h:outputText value="#{proveedores.idProveedor}"/>
+                    </p:column>
+                    <p:column headerText="NIT" sortBy="#{proveedores.nitProveedor}" filterBy="#{proveedores.nitProveedor}" filterMatchMode="contains">
+                        <h:outputText value="#{proveedores.nitProveedor}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{proveedores.nombreProveedor}" filterBy="#{proveedores.nombreProveedor}" filterMatchMode="contains">
+                        <h:outputText value="#{proveedores.nombreProveedor}"/>
+                    </p:column>
+                    <p:column headerText="OBSERVACIONES" sortBy="#{proveedores.observacionProveedor}" filterBy="#{proveedores.observacionProveedor}" filterMatchMode="contains">
+                        <h:outputText value="#{proveedores.observacionProveedor}"/>
+                    </p:column>
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wDlgProveedor').show()"
+                                         update="dlgProveedor">
+                            <f:setPropertyActionListener target="#{proveedorControl.accion}" value="MODIFICAR"/> 
+                            <f:setPropertyActionListener target="#{proveedorControl.proveedor}" value="#{proveedores}"/> 
+                            <!--GUARDAR target: dónde, value=el qué (datatable)-->
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{proveedorControl.proveedor}" value="#{proveedores}"/> 
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            <p:dialog id="dlgProveedor" widgetVar="wDlgProveedor" modal="true">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="NIT proveedor"/>
+                        <p:inputText value="#{proveedorControl.proveedor.nitProveedor}"/>
+                        <p:outputLabel value="Nombre proveedor"/>
+                        <p:inputText value="#{proveedorControl.proveedor.nombreProveedor}"/>
+                        <p:outputLabel value="Observaciones"/>
+                        <p:inputText value="#{proveedorControl.proveedor.observacionProveedor}"/>                        
+                        
+                        <p:commandButton value="#{proveedorControl.accion}" icon="ui-icon-disk" oncomplete="PF('wDlgProveedor').hide()"
+                                         action="#{proveedorControl.doAccion()}"
+                                         update=":frmProveedor:tblProveedor"/>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true" header="Borrado de proveedor">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente deseas borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{proveedorControl.borrarProveedor()}" update=":frmProveedor:tblProveedor"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+            
+        </center>
+    </ui:define>
+</ui:composition>
+

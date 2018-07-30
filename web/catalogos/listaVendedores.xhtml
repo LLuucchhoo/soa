@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      template="../plantilla/plantilla.xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="content">
+        <center>
+            <h:form id="frmVendedor">
+                <p:growl autoUpdate="true"/>
+                <p:dataTable id="tblVendedor" var="vendedor" value="#{vendedorControl.lstVendedores}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom"
+                             widgetVar="wTblProducto"
+                             filteredValue="#{vendedorControl.lstVendedorFiltrada}"
+                             emptyMessage="No se encontró linea de productos">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="BUSQUEDA:" />
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('wTblVendedor').filter()" 
+                                         style="width:450px" 
+                                         placeholder="Ingrese la búsqueda"/>
+                            <p:commandButton value="Agregar" icon="ui-icon-plus"
+                                             oncomplete="PF('wDlgVendedor').show()" update="dlgVendedor">
+                                <f:setPropertyActionListener target="#{vendedorControl.accion}" value="AGREGAR"/>
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="CODIGO" sortBy="#{vendedor.idVendedor}" filterBy="#{vendedor.idVendedor}" filterMatchMode="contains">
+                        <h:outputText value="#{vendedor.idVendedor}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE" sortBy="#{vendedor.nombreVendedor}" filterBy="#{vendedor.nombreVendedor}" filterMatchMode="contains">
+                        <h:outputText value="#{vendedor.nombreVendedor}"/>
+                    </p:column>
+                    <p:column headerText="OBSERVACIONES" sortBy="#{vendedor.observacionVendedor}" filterBy="#{vendedor.observacionVendedor}">
+                        <h:outputText value="#{vendedor.observacionVendedor}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ACCIONES">
+                        <p:commandButton icon="ui-icon-pencil"
+                                         oncomplete="PF('wDlgVendedor').show()"
+                                         update="dlgVendedor">
+                            <f:setPropertyActionListener target="#{vendedorControl.accion}" value="MODIFICAR"/>
+                            <f:setPropertyActionListener target="#{vendedorControl.vendedor}" value="#{vendedor}"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" oncomplete="PF('wDlgBorrar').show()">
+                            <f:setPropertyActionListener target="#{vendedorControl.vendedor}" value="#{vendedor}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            
+            <p:dialog id="dlgBorrar" widgetVar="wDlgBorrar" modal="true"
+                      header="Borrado de linea producto">
+                <h:form>
+                    <p:panelGrid columns="3">
+                        <p:outputLabel value="¿Realmente desea borrar el registro?"/>
+                        <p:commandButton value="SI" oncomplete="PF('wDlgBorrar').hide()" action="#{vendedorControl.borrarVendedor()}" update=":frmVendedor:tblVendedor"/>
+                        <p:commandButton value="NO" oncomplete="PF('wDlgBorrar').hide()"/>
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+            <p:dialog id="dlgVendedor" widgetVar="wDlgVendedor"
+                      modal="true" header="Datos de linea de producto">
+                <h:form>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Zona: "/>
+                        <p:selectOneMenu id="zona" 
+                                         value="#{vendedorControl.vendedor.idZona}"
+                                         required="true"
+                                         requiredMessage="Seleccione la clase"
+                                         converter="entityConverter">
+                                                                                 
+                            <f:selectItem itemLabel="SELECCIONE" itemValue="#{null}" />
+                            <f:selectItems value="#{zonaControl.lstZona}" 
+                                           var="zona" itemLabel="#{zona.nombreZona}"
+                                           itemValue="#{zona}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Nombre"/>
+                        <p:inputText value="#{vendedorControl.vendedor.nombreVendedor}"/>
+                        <p:outputLabel value="Observaciones:"/>
+                        <p:inputText value="#{vendedorControl.vendedor.observacionVendedor}"/>
+                        <p:commandButton value="#{vendedorControl.accion}" icon="ui-icon-disk"
+                                         oncomplete="PF('wDlgVendedor').hide()" 
+                                         action="#{vendedorControl.doAccion()}"
+                                         update=":frmVendedor:tblVendedor"/>
+
+                    </p:panelGrid>
+                </h:form>                
+            </p:dialog>
+
+        </center>
+     </ui:define>
+</ui:composition>
